@@ -4,7 +4,6 @@
             [misfits.net.core :refer :all])
   (:import [java.util UUID]))
 
-(def server (atom nil))
 (def client-channels (atom {}))
 
 (defn notify [client-id topic message]
@@ -20,6 +19,7 @@
     (swap! client-channels #(assoc % client-id (ednify-channel raw-channel)))
     (lamina/on-closed raw-channel (fn [] (swap! client-channels #(dissoc % client-id))))))
 
-(defn start-server []
-  (if @server (throw (Exception. "Server already started!")))
-  (reset! server (aleph/start-tcp-server handle-new-client aleph-params)))
+(defn start-server
+  "Starts server, returns a fn that takes no parameters and shuts down the server"
+  []
+  (aleph/start-tcp-server handle-new-client aleph-params))
