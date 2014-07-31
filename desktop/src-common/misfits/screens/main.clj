@@ -1,4 +1,4 @@
-(ns misfits.main
+(ns misfits.screens.main
   (:require [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]
             [play-clj.ui :refer :all]

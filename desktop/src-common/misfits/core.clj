@@ -3,7 +3,8 @@
             [play-clj.g2d :refer :all]
             [play-clj.ui :refer :all]
             [misfits.net.client :refer [handle-server-messages]]
-            [misfits.main :refer [main-screen]]))
+            [misfits.screens.main :refer [main-screen]]
+            [misfits.screens.title :refer [title-screen]]))
 
 (def level ["HHHHHH_HHHHHHH_H"
             "H___HO___OH_____"
@@ -25,4 +26,8 @@
 (defgame misfits
   :on-create
   (fn [this]
-    (set-screen! this main-screen)))
+;    (set-screen! this main-screen title-screen)
+    (set-screen! this title-screen)
+    ))
+
+
