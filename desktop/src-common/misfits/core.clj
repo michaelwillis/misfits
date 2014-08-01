@@ -4,7 +4,8 @@
             [play-clj.ui :refer :all]
             [misfits.net.client :refer [handle-server-messages]]
             [misfits.screens.main :refer [main-screen]]
-            [misfits.screens.title :refer [title-screen]]))
+            [misfits.screens.title :refer [title-screen]]
+            [misfits.screens.menu :refer [menu-screen]]))
 
 (def level ["HHHHHH_HHHHHHH_H"
             "H___HO___OH_____"
@@ -27,7 +28,6 @@
   :on-create
   (fn [this]
 ;    (set-screen! this main-screen title-screen)
-    (set-screen! this title-screen)
-    ))
+    (set-screen! this title-screen menu-screen)))
 
 
