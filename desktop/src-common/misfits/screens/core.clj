@@ -3,7 +3,9 @@
             [play-clj.g2d :refer :all]
             [play-clj.ui :refer :all]))
 
-(defn pixel-size []
+(defn pixel-size
+  "Hurray! Responsive UI! Mwuhahahaha..."
+  []
   (cond 
    (> 512 (game :height)) 1
    (> 1024 (game :height)) 2
@@ -12,7 +14,6 @@
    :else 5))
 
 (defn resize-pixels! [screen]
-  (println (str "Resize pixels! " screen))
   (height! screen (/ (game :height) (pixel-size))))
 
 (defn setup-camera! [screen]

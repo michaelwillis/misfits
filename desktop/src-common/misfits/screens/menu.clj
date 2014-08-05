@@ -5,14 +5,17 @@
             [misfits.screens.core :refer :all]))
 
 (defn layout [screen]
-  (let [font (bitmap-font "font/Averia-16.fnt")
-        text-white (label "QUIT!!!" (style :label font (color :white)) :set-x 250 :set-y 150 )
-        text-red (label "JOIN GAME!!!" (style :label font (color :red)) :set-x 200 :set-y 175)
-        text-blue (label "NEW GAME!!!" (style :label font (color :blue)) :set-x 220 :set-y 200)
-        cam (screen :camera)
-        cam-width (.viewportWidth cam)
-        cam-height (.viewportHeight cam)]
-    [text-white text-red text-blue]))
+  (let [ui-skin (skin "skin/uiskin.json")
+        menu (table
+              [[(text-button "Start Local Game" ui-skin) :width 256 :space-bottom 8]
+               :row
+               [(text-button "Connect To Server" ui-skin) :width 256 :space-bottom 8]
+               :row
+               (table [[(text-button "Options" ui-skin) :width 128 :space-left 24]
+                       [(text-button "Quit" ui-skin) :width 128 :space-right 8]])]
+              :align (align :center)
+              :set-fill-parent true)]
+    menu))
 
 (defscreen menu-screen
   :on-show
@@ -25,4 +28,9 @@
 
   :on-resize
   (fn [screen entities]
-    (layout screen)))
+    (resize-pixels! screen)
+    (layout screen))
+
+  :on-touch-down
+  (fn [event entities]
+    (println (str "Touch event! " event ", " entities))))
