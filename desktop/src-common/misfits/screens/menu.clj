@@ -102,8 +102,10 @@
       (case name
         "start-game" (difficulty-menu screen)
         "connect" (connect-menu screen)
-        "main-menu" (main-menu screen)
         "options" (options-menu screen)
+        "quit" (app! :exit)
+        "main-menu" (main-menu screen)
+
         "fullscreen" (do
                        (set-fullscreen! (check-box! (:actor screen) :is-checked))
                        entities)
