@@ -2,7 +2,8 @@
   (:require [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]
             [play-clj.ui :refer :all]
-            [misfits.screens.core :refer :all]))
+            [misfits.screens.core :refer :all]
+            [misfits.screens.main :refer [main-screen]]))
 
 (defn display-mode-to-vector [mode]
   [(.width mode) (.height mode)])
@@ -12,15 +13,17 @@
 
 (defn set-resolution! [s]
   (let [mode (->> (graphics! :get-display-modes) (filter #(= s (display-mode-to-string %))) first)]
-    (graphics! :set-display-mode (.width mode) (.height mode) (graphics! :is-fullscreen))))
+    (graphics! :set-display-mode (.width mode) (.height mode) (graphics! :is-fullscreen)))
+  nil)
 
 (defn set-fullscreen! [f]
-  (graphics! :set-display-mode (graphics! :get-width) (graphics! :get-height) f))
+  (graphics! :set-display-mode (graphics! :get-width) (graphics! :get-height) f)
+  nil)
 
-(defn main-menu [screen]
+(defn main-menu []
   (let [ui-skin (skin "skin/uiskin.json")]
     (table
-     [[(image "title.png")]
+     [[(image "title.png") :space-bottom 16]
       :row
       [(text-button "Start Local Game" ui-skin :set-name "start-game") :width 256 :space-bottom 8]
       :row
@@ -31,10 +34,10 @@
      :align (align :top)
      :set-fill-parent true)))
 
-(defn difficulty-menu [screen]
+(defn difficulty-menu []
   (let [ui-skin (skin "skin/uiskin.json")]
     (table
-     [[(image "title.png")]
+     [[(image "title.png") :space-bottom 16]
       :row
       [(label "Select Difficulty" ui-skin) :space-bottom 8]
       :row
@@ -48,10 +51,10 @@
      :align (align :top)
      :set-fill-parent true)))
 
-(defn connect-menu [screen]
+(defn connect-menu []
   (let [ui-skin (skin "skin/uiskin.json")]
     (table
-     [[(image "title.png")]
+     [[(image "title.png") :space-bottom 16]
       :row
       [(label "Enter Server Address" ui-skin) :space-bottom 8]
       :row
@@ -62,29 +65,36 @@
      :align (align :top)
      :set-fill-parent true)))
 
-(defn options-menu [screen]
+(defn options-menu []
   (let [ui-skin (skin "skin/uiskin.json")]
     (table
-     [[(image "title.png")]
+     [[(image "title.png") :space-bottom 16]
       :row
-      (table [(check-box "Full Screen" ui-skin :set-name "fullscreen" :set-checked (graphics! :is-fullscreen))
-              (label "             " ui-skin)
-              (select-box ui-skin :set-name "resolution" :set-items (->> (graphics! :get-display-modes)
-                                                                         (map (juxt display-mode-to-vector
-                                                                                    display-mode-to-string))
-                                                                         (into (sorted-map))
-                                                                         (vals)
-                                                                         (reverse)
-                                                                         (into-array)))])
+      [(label "Options" ui-skin) :space-bottom 8]
+      :row
+      [(table [(check-box "Full Screen" ui-skin :set-name "fullscreen" :set-checked (graphics! :is-fullscreen))
+               (label "             " ui-skin)
+               (select-box ui-skin :set-name "resolution" :set-items (->> (graphics! :get-display-modes)
+                                                                          (map (juxt display-mode-to-vector
+                                                                                     display-mode-to-string))
+                                                                          (into (sorted-map))
+                                                                          (vals)
+                                                                          (reverse)
+                                                                          (into-array)))])
+       :space-bottom 8]
       :row
       [(text-button "Back" ui-skin :set-name "main-menu") :width 64 :space-bottom 8]]
      :align (align :top)
      :set-fill-parent true)))
 
+(defn start-game [difficulty]
+  (run! main-screen :on-start-game :difficulty difficulty))
+
 (defscreen menu-screen
   :on-show
   (fn [screen entities]
-    (-> screen setup-camera! main-menu))
+    (setup-camera! screen)
+    (main-menu))
   
   :on-render
   (fn [screen entities]
@@ -98,18 +108,15 @@
   :on-ui-changed
   (fn [screen entities]
     (let [name (actor! (:actor screen) :get-name)]
-      (println name)
       (case name
-        "start-game" (difficulty-menu screen)
-        "connect" (connect-menu screen)
-        "options" (options-menu screen)
+        "start-game" (difficulty-menu)
+        "connect" (connect-menu)
+        "options" (options-menu)
         "quit" (app! :exit)
-        "main-menu" (main-menu screen)
-
-        "fullscreen" (do
-                       (set-fullscreen! (check-box! (:actor screen) :is-checked))
-                       entities)
-        "resolution" (do
-                       (set-resolution! (select-box! (:actor screen) :get-selected))
-                       entities)
-        entities))))
+        "main-menu" (main-menu)
+        "hard" (start-game "hard")
+        "super-hard" (start-game "super-hard")
+        "super-duper" (start-game "super-duper")
+        "fullscreen" (set-fullscreen! (check-box! (:actor screen) :is-checked))
+        "resolution" (set-resolution! (select-box! (:actor screen) :get-selected))
+        (do (println name) entities)))))

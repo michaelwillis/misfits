@@ -10,7 +10,7 @@
 
 (def tile-size 32)
 
-(def channel (atom nil))
+;(def channel (atom nil))
 (def sprites (atom nil))
 
 (defscreen main-screen
@@ -21,7 +21,7 @@
           tiles-sheet (texture "LPC_Tile_Atlas/tiles.png")
           tiles-textures (texture! tiles-sheet :split tile-size tile-size)]
 
-      (reset! channel (connect "127.0.0.1"))
+;      (reset! channel (connect "127.0.0.1"))
 
       (reset! sprites {:stone1 (texture (aget tiles-textures 0 0))
                        :wall-front (texture (aget tiles-textures 0 1))
@@ -33,11 +33,15 @@
 
       (position! screen (* 16 tile-size) (* 16 tile-size))))
   
+  :on-start-game
+  (fn [screen entities]
+    (println (keys screen)))
+
   :on-render
   (fn [screen entities]
     (clear!)
     (->> entities
-         (handle-server-messages @channel @sprites)
+;         (handle-server-messages @channel @sprites)
          (render! screen)))
 
   :on-resize
