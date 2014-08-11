@@ -9,14 +9,14 @@
             "H_____H_____H_____HHHHHHHHHHHHHH"
             "H___________O________HHHHHHH____"
             "H_____H_____H_____HH_HHHHHHH_HHH"
-            "H_____H_____H_____HH_HHHHHHH_HHH"
+            "H_____H_O___H_____HH_HHHHHHH_HHH"
             "HHH_HHHHH_HHHHHHHHHH_________HHH"
-            "HHH_HHHHH_HHHHHHHHHH_HHHHHHHHHHH"
             "HHH__________HHHHHHH_HHHHHHHHHHH"
-            "HHHHHHHHHHHH_HHHHHHH_HHHHHHHHHHH"
-            "HHHHHHHHHHHH_________HHHHHHHHHHH"
-            "HHH____HHHHH_HHHH_HHHHHHHHHHHHHH"
-            "HHH____HH____HHHH_HHHHHHHHHHHHHH"
+            "HHHHH_HHHHHH_HHHHHHH_HHHHHHHHHHH"
+            "HHHHHOHHHHHH_HHHHHHH_HHHHHHHHHHH"
+            "HHHHH_HHHHHH_________HHHHHHHHHHH"
+            "HHH_____HHHH_HHHH_HHHHHHHHHHHHHH"
+            "HHH_____H____HHHH_HHHHHHHHHHHHHH"
             "HHHHHH_HH_HHHHHHH_HHHHHHHHHHHHHH"
             "HHHHHH_HH_HHHHHHH_HHHHHHHHHHHHHH"
             "HHHH______________HHHHHHHHHHHHHH"
@@ -50,7 +50,8 @@
 (defn handle-new-client [raw-channel client]
   (let [client-id (UUID/randomUUID)]
     (swap! client-channels #(assoc % client-id (ednify-channel raw-channel)))
-    (lamina/on-closed raw-channel (fn [] (swap! client-channels #(dissoc % client-id))))))
+    (lamina/on-closed raw-channel (fn [] (swap! client-channels #(dissoc % client-id))))
+    (notify client-id :floor {:floor level})))
 
 (defn start-server
   "Starts server, returns a fn that takes no parameters and shuts down the server"

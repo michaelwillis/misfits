@@ -9,4 +9,8 @@
 (defgame misfits
   :on-create
   (fn [this]
+    (set-screen-wrapper! (fn [screen-atom screen-fn]
+                           (try (screen-fn)
+                                (catch Exception e
+                                  (.printStackTrace e)))))
     (set-screen! this main-screen menu-screen)))

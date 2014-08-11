@@ -26,10 +26,10 @@
   (let [this-tile (floor-map [x y])
         down-tile (floor-map [x (dec y)])
         tile-sprites [(cond (= this-tile :floor) (sprites :stone1)
-                       (= this-tile :wall) (if (= down-tile :wall) 
-                                             (sprites :wall-top) 
-                                             (sprites :wall-front))
-                       (= this-tile :pit) (sprites :pit))]
+                            (= this-tile :wall) (if (or (= y 0) (= down-tile :wall)) 
+                                                  (sprites :wall-top) 
+                                                  (sprites :wall-front))
+                            (= this-tile :pit) (sprites :pit))]
         tile-sprites (if (and (not= this-tile :wall) (= down-tile :wall))
                        (conj tile-sprites (sprites :wall-back))
                        tile-sprites)]
@@ -56,10 +56,4 @@
   (if (= 0 (count client-channel)) entities
       (let [[topic message] @(lamina/read-channel client-channel)
             entities (handle-message sprites entities topic message)]
-        (recur client-channel sprites entities))))
-
-
-(comment
-  (if (= 0 (count client-channel)) entities
-      (let [entities (handle-message sprites entities (lamina/read-channel client-channel))]
         (recur client-channel sprites entities))))

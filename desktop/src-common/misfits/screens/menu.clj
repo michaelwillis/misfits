@@ -3,7 +3,9 @@
             [play-clj.g2d :refer :all]
             [play-clj.ui :refer :all]
             [misfits.screens.core :refer :all]
-            [misfits.screens.main :refer [main-screen]]))
+            [misfits.screens.main :refer [main-screen]]
+            [misfits.net.client :refer [connect]]
+            [misfits.net.server :refer [start-server]]))
 
 (defn display-mode-to-vector [mode]
   [(.width mode) (.height mode)])
@@ -88,7 +90,11 @@
      :set-fill-parent true)))
 
 (defn start-game [difficulty]
-  (run! main-screen :on-start-game :difficulty difficulty))
+  (run! main-screen :on-start-game 
+        :server-shutdown-fn (start-server)
+        :channel (connect "127.0.0.1")
+        :difficulty difficulty)
+  [])
 
 (defscreen menu-screen
   :on-show
@@ -98,7 +104,6 @@
   
   :on-render
   (fn [screen entities]
-    (clear!)
     (render! screen entities))
 
   :on-resize
