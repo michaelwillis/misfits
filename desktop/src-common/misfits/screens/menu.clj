@@ -96,6 +96,13 @@
         :difficulty difficulty)
   [])
 
+(defn toggle-menu [entities]
+  (if (not (empty? @(main-screen :entities)))
+    (if (empty? entities)
+      (do
+        (main-menu))
+      [])))
+
 (defscreen menu-screen
   :on-show
   (fn [screen entities]
@@ -109,6 +116,13 @@
   :on-resize
   (fn [screen entities]
     (resize-pixels! screen))
+
+  :on-key-down
+  (fn [screen entities]
+    (let [k (:key screen)]
+      (cond
+       (= k (key-code :escape)) (toggle-menu entities)
+       :else entities)))
 
   :on-ui-changed
   (fn [screen entities]

@@ -38,13 +38,6 @@
     (reset! server-shutdown-fn (screen :server-shutdown-fn))
     entities)
 
-  :on-key-down
-  (fn [screen entities]
-    (let [k (:key screen)]
-      (cond
-       (= k (key-code :escape)) (println "Show menu!")))
-    entities)
-
   :on-render
   (fn [screen entities]
     (let [entities (if @channel
