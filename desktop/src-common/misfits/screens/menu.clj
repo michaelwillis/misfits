@@ -1,11 +1,14 @@
 (ns misfits.screens.menu
-  (:require [play-clj.core :refer :all]
+  (:require [lamina.core :as lamina]
+            [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]
             [play-clj.ui :refer :all]
             [misfits.screens.core :refer :all]
             [misfits.screens.main :refer [main-screen]]
             [misfits.net.client :refer [connect]]
             [misfits.net.server :refer [start-server]]))
+
+(def server-shutdown-fn (atom nil))
 
 (defn display-mode-to-vector [mode]
   [(.width mode) (.height mode)])
@@ -90,8 +93,13 @@
      :set-fill-parent true)))
 
 (defn start-game [difficulty]
+
+  (if @server-shutdown-fn 
+    (lamina/wait-for-result (@server-shutdown-fn)))
+
+  (reset! server-shutdown-fn (start-server))
+
   (run! main-screen :on-start-game 
-        :server-shutdown-fn (start-server)
         :channel (connect "127.0.0.1")
         :difficulty difficulty)
   [])

@@ -1,5 +1,6 @@
 (ns misfits.screens.main
-  (:require [play-clj.core :refer :all]
+  (:require [lamina.core :as lamina]
+            [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]
             [play-clj.ui :refer :all]
             [misfits.net.client :refer [connect handle-server-messages]]))
@@ -10,7 +11,6 @@
 
 (def tile-size 32)
 
-(def server-shutdown-fn (atom (fn [] nil)))
 (def channel (atom nil))
 (def sprites (atom nil))
 
@@ -34,8 +34,8 @@
   
   :on-start-game
   (fn [screen entities]
+    (if @channel (lamina/close @channel))
     (reset! channel (screen :channel))
-    (reset! server-shutdown-fn (screen :server-shutdown-fn))
     entities)
 
   :on-render
