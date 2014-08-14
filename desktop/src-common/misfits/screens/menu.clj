@@ -6,9 +6,11 @@
             [misfits.screens.core :refer :all]
             [misfits.screens.main :refer [main-screen]]
             [misfits.net.client :refer [connect]]
-            [misfits.net.server :refer [start-server]]))
+            [misfits.net.server :refer [start-server]])
+  (:import [com.badlogic.gdx.scenes.scene2d.ui TextField$TextFieldListener]))
 
 (def server-shutdown-fn (atom nil))
+(def server-address (atom "127.0.0.1"))
 
 (defn display-mode-to-vector [mode]
   [(.width mode) (.height mode)])
@@ -32,7 +34,7 @@
       :row
       [(text-button "Start Local Game" ui-skin :set-name "start-game") :width 256 :space-bottom 8]
       :row
-      [(text-button "Connect To Server" ui-skin :set-name "connect") :width 256 :space-bottom 8]
+      [(text-button "Connect To Server" ui-skin :set-name "connect-menu") :width 256 :space-bottom 8]
       :row
       (table [[(text-button "Options" ui-skin :set-name "options") :width 128]
               [(text-button "Quit" ui-skin :set-name "quit") :width 128]])]
@@ -40,6 +42,7 @@
      :set-fill-parent true)))
 
 (defn difficulty-menu []
+  (reset! server-address "127.0.0.1")
   (let [ui-skin (skin "skin/uiskin.json")]
     (table
      [[(image "title.png") :space-bottom 16]
@@ -56,14 +59,21 @@
      :align (align :top)
      :set-fill-parent true)))
 
-(defn connect-menu []
-  (let [ui-skin (skin "skin/uiskin.json")]
+(defn connect-menu [error-message address]
+  (let [ui-skin (skin "skin/uiskin.json")
+        text-listener (proxy [TextField$TextFieldListener] []
+                        (keyTyped [f c]
+                          (println c)
+                          (reset! server-address (text-field! f :get-text))))]
     (table
      [[(image "title.png") :space-bottom 16]
       :row
       [(label "Enter Server Address" ui-skin) :space-bottom 8]
       :row
-      [(text-field "" ui-skin :set-width 256) :space-bottom 8]
+      [(text-field address ui-skin :set-text-field-listener text-listener)
+       :width 256 :space-bottom 8]
+      :row
+      [(label error-message ui-skin :set-color (color :red)) :space-bottom 8]
       :row
       (table [[(text-button "Connect" ui-skin :set-name "connect") :width 128 :space-bottom 8]
               [(text-button "Back" ui-skin :set-name "main-menu") :width 128 :space-bottom 8]])]
@@ -93,23 +103,26 @@
      :set-fill-parent true)))
 
 (defn start-game [difficulty]
-
-  (if @server-shutdown-fn 
-    (lamina/wait-for-result (@server-shutdown-fn)))
-
+  (if @server-shutdown-fn (lamina/wait-for-result (@server-shutdown-fn)))
   (reset! server-shutdown-fn (start-server))
-
-  (run! main-screen :on-start-game 
-        :channel (connect "127.0.0.1")
-        :difficulty difficulty)
+  (run! main-screen :on-start-game :channel (connect "127.0.0.1"))
   [])
+
+(defn connect-to-server [address]
+  (try
+    (let [ch (connect address)]
+      (when @server-shutdown-fn 
+        (lamina/wait-for-result (@server-shutdown-fn))
+        (reset! server-shutdown-fn nil))
+
+      (run! main-screen :on-start-game :channel (connect address))
+      [])
+    (catch Throwable t
+      (connect-menu (str "Couldn't connect to " address) address))))
 
 (defn toggle-menu [entities]
   (if (not (empty? @(main-screen :entities)))
-    (if (empty? entities)
-      (do
-        (main-menu))
-      [])))
+    (if (empty? entities) (main-menu) [])))
 
 (defscreen menu-screen
   :on-show
@@ -137,13 +150,18 @@
     (let [name (actor! (:actor screen) :get-name)]
       (case name
         "start-game" (difficulty-menu)
-        "connect" (connect-menu)
+        "connect-menu" (connect-menu "" "")
         "options" (options-menu)
         "quit" (app! :exit)
+
         "main-menu" (main-menu)
+
         "hard" (start-game "hard")
         "super-hard" (start-game "super-hard")
         "super-duper" (start-game "super-duper")
+
+        "connect" (connect-to-server @server-address)
+
         "fullscreen" (set-fullscreen! (check-box! (:actor screen) :is-checked))
         "resolution" (set-resolution! (select-box! (:actor screen) :get-selected))
         (do (println name) entities)))))
