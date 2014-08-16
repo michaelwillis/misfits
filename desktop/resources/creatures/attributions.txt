@@ -1,0 +1,17 @@
+spider.png:
+        http://opengameart.org/content/lpc-spider
+        graphic artist: Stephen "Redshrike" Challener
+        contributor: William.Thompsonj
+
+ghost.png:
+        http://lpc.opengameart.org/static/lpc-style-guide/assets.html
+        ???
+        altered by Michael Willis
+
+bee.png, eyeball.png, slime.png, snake.png:
+        http://lpc.opengameart.org/static/lpc-style-guide/assets.html
+        ???
+
+bat.png:
+        http://opengameart.org/content/bat-sprite
+        
