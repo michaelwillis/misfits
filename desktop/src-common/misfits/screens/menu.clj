@@ -5,8 +5,8 @@
             [play-clj.ui :refer :all]
             [misfits.screens.core :refer :all]
             [misfits.screens.main :refer [main-screen]]
-            [misfits.net.client :refer [connect]]
-            [misfits.net.server :refer [start-server]])
+            [misfits.client :refer [connect]]
+            [misfits.server :refer [start-server]])
   (:import [com.badlogic.gdx.scenes.scene2d.ui TextField$TextFieldListener]))
 
 (def server-shutdown-fn (atom nil))
@@ -63,7 +63,6 @@
   (let [ui-skin (skin "skin/uiskin.json")
         text-listener (proxy [TextField$TextFieldListener] []
                         (keyTyped [f c]
-                          (println c)
                           (reset! server-address (text-field! f :get-text))))]
     (table
      [[(image "title.png") :space-bottom 16]

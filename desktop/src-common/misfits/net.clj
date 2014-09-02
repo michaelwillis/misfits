@@ -1,4 +1,4 @@
-(ns misfits.net.core
+(ns misfits.net
   (:require [clojure.edn :as edn]
             [lamina.core :as lamina]
             [gloss.core :as gloss]))
