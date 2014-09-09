@@ -70,11 +70,11 @@
            "HHHH     HHHHHH    HHHHHHHHHHHHH"
            "HHHH HHHHHHHHHH HHHHHHHHHHHHHHHH"
            "HHHH HHHH O HHH HHHHHHHHHHHHHHHH"
-           "HHH   HHH   H   HHHHHHHHHHHHHHHH"
-           "HH     HHHH   HHHHHHHHHHHHHHHHHH"
-           "HH          HHHHHHHHHHHHHHHHHHHH"
+           "HH     HH   H   HHHHHHHHHHHHHHHH"
+           "H       HHH   HHHHHHHHHHHHHHHHHH"
+           "H           HHHHHHHHHHHHHHHHHHHH"
+           "H       HHHHHHHHHHHHHHHHHHHHHHHH"
            "HH     HHHHHHHHHHHHHHHHHHHHHHHHH"
-           "HHH   HHHHHHHHHHHHHHHHHHHHHHHHHH"
            "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"])
    ])
 
@@ -92,7 +92,7 @@
   (let [client-id (UUID/randomUUID)]
     (swap! client-channels #(assoc % client-id (ednify-channel raw-channel)))
     (lamina/on-closed raw-channel (fn [] (swap! client-channels #(dissoc % client-id))))
-    (notify client-id :floor {:floor (rand-nth dungeon)})))
+    (notify client-id :tiles {:tiles (rand-nth dungeon)})))
 
 (defn start-server
   "Starts server, returns a fn that takes no parameters and shuts down the server"
